@@ -71,7 +71,7 @@
   label.f{font-size:12px;font-weight:650;color:var(--muted);display:block;margin:8px 0 3px}
   input,select{width:100%;font-size:15px;font-family:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
   input:focus,select:focus{outline:2px solid var(--primary-soft);border-color:var(--primary)}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .hint{font-size:11px;color:#9a8a92;margin-top:3px}
   .pat{display:flex;gap:14px;font-size:14px;margin-top:4px}
   .pat label{display:flex;gap:5px;align-items:center}
@@ -137,6 +137,7 @@
       <div class="hint">All course lengths count from this date. Set it to the actual discharge day.</div>
       <label class="f">Dose times</label>
       <div class="grid3">
+        <div><div class="hint">Early morning</div><input type="time" id="s_t3"></div>
         <div><div class="hint">Morning</div><input type="time" id="s_t0"></div>
         <div><div class="hint">Afternoon</div><input type="time" id="s_t1"></div>
         <div><div class="hint">Night</div><input type="time" id="s_t2"></div>
@@ -151,7 +152,7 @@
 
     <div class="group"><h2>Regular medicines</h2></div>
     <div class="card">
-      <div class="meta">The discharge sheet says to continue her earlier medicines as before. Add them here so they show up on the daily list.</div>
+      <div class="meta">Her regular prescription from Dr. Chawla is already built in. Add anything else she takes here.</div>
       <div id="regList" style="margin-top:6px"></div>
       <label class="f">Medicine name and strength</label>
       <input type="text" id="r_name" placeholder="e.g. Telma 40">
@@ -205,16 +206,29 @@ const MEDS = [
   {id:'pan',      name:'Pan 40 mg',         dose:'1 tablet', purpose:'Acidity and stomach protection', pat:[1,0,1], days:15, sos:'acidity',
    note:'Protects the stomach from the painkillers and the blood thinner. Usually given before food; confirm the timing with the doctor.'},
   {id:'emeset',   name:'Emeset 8 mg',       dose:'1 tablet', purpose:'Nausea and vomiting', pat:[1,1,1], days:15, sos:'vomiting'},
-  {id:'deplatt',  name:'Deplatt A 75 mg',   dose:'1 tablet', purpose:'Blood thinner (antiplatelet)', pat:[0,1,0], days:30,
-   note:'Never skip or stop this on your own. Tell the doctor about black stools, blood in urine, unusual bruising or bleeding gums.'},
+  {id:'deplatt',  name:'Deplatt A 75 mg',   dose:'1 tablet', purpose:'Blood thinner (clopidogrel + aspirin)', pat:[0,1,0], ongoing:true, regularMed:true,
+   note:'ONE tablet a day only. It is on both her regular prescription (after breakfast) and the discharge sheet (afternoon), so it is shown once, at the discharge sheet timing. Confirm the timing with the doctor. Never skip or stop it on your own. Tell the doctor about black stools, blood in urine, unusual bruising or bleeding gums.'},
   {id:'cremaffin',name:'Cremaffin syrup',   dose:'15 ml', purpose:'Constipation', pat:[1,0,1], days:3, sos:'constipation',
    note:'Daily for the first 3 days, then only when constipated.'},
   {id:'bonk2',    name:'Bon K2',            dose:'1 tablet', purpose:'Bone health', pat:[0,1,0], days:90},
   {id:'bondk',    name:'Bon DK 60K IU shot',dose:'1 shot', purpose:'Vitamin D (weekly)', pat:[0,1,0], weekly:true, weeks:8,
    note:'Once a week for 8 weeks. The sheet does not give a time, so it is placed with lunch. Taking it with a meal helps absorption.'},
   {id:'atoz',     name:'A to Z',            dose:'1 tablet', purpose:'Multivitamin', pat:[0,1,0], days:30, food:'After food'},
-  {id:'esos',     name:'ESOS',              dose:'1 tablet', purpose:'Hyperacidity (Dr. Paresh)', pat:[0,1,1], ongoing:true, startOn:'2026-10-25', food:'Before meal',
-   note:'Before lunch and before dinner. Added by Dr. Paresh for hyperacidity. Strength is not written, so check the strip. Continue until a doctor says to stop.'},
+  {id:'esos',     name:'ESOS (esomeprazole 40 + domperidone)', dose:'1 capsule', purpose:'Hyperacidity (Dr. Paresh)', pat:[0,1,1], ongoing:true, startOn:'2026-10-25', food:'Before meal',
+   note:'Before lunch and before dinner. Added by Dr. Paresh for hyperacidity. Swallow whole. Continue until a doctor says to stop.'},
+
+  /* Regular medicines, Dr. Manoj Chawla, Lina Diabetes Care, 10 Aug 2026. pat = [morning, afternoon, night, early morning] */
+  {id:'thyrox',   name:'Thyrox 25 mcg',       dose:'1 tablet', doseByDay:{2:'2 tablets',4:'2 tablets',6:'2 tablets'}, purpose:'Thyroid (thyroxine)', pat:[0,0,0,1], ongoing:true, regularMed:true, food:'Empty stomach',
+   note:'1 tablet daily, 2 tablets on Tuesday, Thursday and Saturday. Give with plain water on waking, before tea and breakfast. Keep it about 4 hours away from Gelusil and from Eido Fe Forte (iron), which reduce how much of it is absorbed.'},
+  {id:'nikoran',  name:'Nikoran 5',           dose:'1 tablet', purpose:'Heart (nicorandil)', pat:[1,0,1], ongoing:true, regularMed:true, food:'After meal',
+   note:'After breakfast and after dinner.'},
+  {id:'seloken',  name:'Seloken XL 25 mg',    dose:'1 tablet', purpose:'BP and heart rate (metoprolol)', pat:[1,0,0], ongoing:true, regularMed:true, food:'After breakfast',
+   note:'Do not crush. Do not stop suddenly.'},
+  {id:'udapa',    name:'Udapa M 5/500',       dose:'1 tablet', purpose:'Diabetes (dapagliflozin + metformin)', pat:[1,0,0], ongoing:true, regularMed:true, food:'After breakfast'},
+  {id:'eidofe',   name:'Eido Fe Forte',       dose:'1 tablet', purpose:'Vitamins and iron', pat:[1,0,0], ongoing:true, regularMed:true, food:'After breakfast'},
+  {id:'coversyl', name:'Coversyl 5 mg',       dose:'1 tablet', purpose:'BP (perindopril)', pat:[0,0,1], ongoing:true, regularMed:true, food:'After dinner'},
+  {id:'rosuvas',  name:'Rosuvas 5 mg',        dose:'1 tablet', purpose:'Cholesterol (rosuvastatin)', pat:[0,0,1], ongoing:true, regularMed:true, food:'After dinner'},
+  {id:'ignalis',  name:'Ignalis M SR 100/500',dose:'1 tablet', purpose:'Diabetes (sitagliptin + metformin)', pat:[0,0,1], ongoing:true, regularMed:true, food:'After dinner'},
   {id:'gelusil',  name:'Gelusil',           dose:'As per pack', purpose:'Antacid for acidity (Dr. Paresh)', pat:[0,0,0], ongoing:true, startOn:'2026-10-25', sos:'acidity',
    note:'Antacid for acidity relief. Antacids can reduce how well other tablets absorb, so where possible keep it about 2 hours away from her other medicines. Confirm the dose with the doctor or pharmacist.'}
 ];
@@ -223,7 +237,11 @@ const DOC_UPDATE = {date:'2026-10-25', by:'Dr. Paresh', text:'Hyperacidity plan:
 
 const FLAGS = [
   ['Acidity not settling','Dr. Paresh said: if the acidity still does not stop on ESOS and Gelusil, visit a GP. Go sooner, or to emergency, for vomiting blood, black or tarry stools, severe stomach pain, or chest pain.'],
-  ['Two acidity tablets','Pan 40 and ESOS both reduce stomach acid, and ESOS is usually esomeprazole, the same type of medicine as Pan. Dr. Paresh did not say whether Pan 40 continues. Ask him or the pharmacist before giving both, and check the ESOS strip.'],
+  ['Two acidity tablets','Pan 40 (pantoprazole) and ESOS (esomeprazole) are the same type of acid reducer. Dr. Paresh did not say whether Pan 40 continues. Ask him before giving both.'],
+  ['Two anti nausea medicines','ESOS contains domperidone and Emeset is ondansetron. Both treat nausea and both can affect heart rhythm, which matters more at her age and with her heart medicines. Ask the doctor whether she needs both.'],
+  ['Deplatt A on both prescriptions','Her regular prescription and the discharge sheet both list Deplatt A 75. Give one tablet a day, never two. The app shows it once.'],
+  ['Low sugar while eating less','Her diabetes doctor noted possible low sugar with delayed meals. After surgery she may eat less, so watch for sweating, shaking, confusion or unusual drowsiness and check her sugar. Keep meals on time after Udapa M and Ignalis M. Also ask the doctor whether Udapa M should continue while her eating is reduced.'],
+  ['Spacing Thyrox','Thyrox works best on an empty stomach. Keep Gelusil and Eido Fe Forte about 4 hours away from it.'],
   ['No extra paracetamol','Lanol ER is paracetamol. Do not add Crocin, Dolo or any other paracetamol. Enzoflam, which also contained paracetamol, has been stopped.'],
   ['Drowsiness and falls','Tapal ER is an opioid painkiller. In the first days she may feel sleepy or dizzy. Help her to the bathroom and keep the path clear, especially at night.'],
   ['Bleeding and stomach','Deplatt A is a blood thinner, which raises the chance of stomach bleeding. Black or tarry stools, vomiting blood, or new bruising need a call to the doctor the same day.'],
@@ -231,7 +249,8 @@ const FLAGS = [
   ['Time of day','The sheet says only morning, afternoon and night. Apart from A to Z (after food), it does not say before or after food. Ask the doctor or pharmacist at the follow up.']
 ];
 
-const SLOTS = ['Morning','Afternoon','Night'];
+const SLOTS = ['Morning','Afternoon','Night','Early morning'];
+const ORDER = [3,0,1,2];
 const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 /* ================= STORAGE ================= */
@@ -251,7 +270,8 @@ function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');cle
 function cfg(){
   const today=ymd(new Date());
   const c=ls(K.cfg,null)||{};
-  return {start:c.start||today, times:c.times||['09:00','14:00','21:00'],
+  const t=(c.times||['09:00','14:00','21:00']).slice(); if(!t[3]) t[3]='07:00';
+  return {start:c.start||today, times:t,
           dk:(c.dk===undefined||c.dk===null)?parseYmd(c.start||today).getDay():c.dk, by:c.by||''};
 }
 function events(){return ls(K.ev,[]);}
@@ -277,7 +297,7 @@ function courseInfo(med, dateStr){
   if(med.ongoing){
     const s0=med.startOn||c.start; const started=dateStr>=s0;
     return {active: started && med.pat.some(Boolean), started, ongoing:true, idx: daysBetween(s0,dateStr),
-            label:'Since '+fmtDate(s0), ended:false, endDate:null};
+            label: med.regularMed?'Regular':'Since '+fmtDate(s0), ended:false, endDate:null};
   }
   if(med.weekly){
     const total=med.weeks*7;
@@ -292,10 +312,12 @@ function courseInfo(med, dateStr){
 }
 
 function dosesFor(dateStr){
-  const out=[[],[],[]];
+  const out=[[],[],[],[]];
+  const wd=parseYmd(dateStr).getDay();
   MEDS.forEach(m=>{
     const ci=courseInfo(m,dateStr); if(!ci.active) return;
-    m.pat.forEach((p,s)=>{ if(p) out[s].push({...m, info:ci}); });
+    const dose=(m.doseByDay&&m.doseByDay[wd])||m.dose;
+    m.pat.forEach((p,s)=>{ if(p) out[s].push({...m, dose, info:ci}); });
   });
   regular().forEach(r=>{
     r.pat.forEach((p,s)=>{ if(p) out[s].push({id:r.id,name:r.name,dose:r.dose,purpose:'Regular medicine',regular:true,info:{label:'Ongoing'}}); });
@@ -316,8 +338,8 @@ function renderToday(){
   const wrap=$('todayList'); wrap.innerHTML='';
   const now=new Date(); const nowHM=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   let overdue=0;
-  groups.forEach((list,s)=>{
-    if(!list.length) return;
+  ORDER.forEach(s=>{
+    const list=groups[s]; if(!list.length) return;
     const pending=list.filter(m=>!st[viewDate+'|'+s+'|'+m.id]).length;
     const isDue = viewDate===today && nowHM>=c.times[s] && pending>0;
     if(isDue) overdue+=pending;
@@ -332,7 +354,7 @@ function renderToday(){
           '<div class="chk'+(ev?' on':'')+'"></div>'+
           '<div style="flex:1;min-width:0">'+
             '<div class="name">'+esc(m.name)+'</div>'+
-            '<div class="meta">'+esc(m.dose)+' · '+esc(m.purpose)+'</div>'+
+            '<div class="meta">'+(m.doseByDay&&Object.values(m.doseByDay).includes(m.dose)?'<b>'+esc(m.dose)+' today</b>':esc(m.dose))+' · '+esc(m.purpose)+'</div>'+
             '<span class="tag">'+m.info.label+'</span>'+
             (m.food?'<span class="tag food">'+m.food+'</span>':'')+
             (m.info.last?'<span class="tag last">Last scheduled day</span>':'')+
@@ -413,13 +435,16 @@ function renderSos(){
 function renderCourse(){
   const today=ymd(new Date()); const wrap=$('courseList'); wrap.innerHTML='';
   const g=document.createElement('div'); g.className='group'; g.innerHTML='<h2>Course progress</h2><span class="t">from '+fmtDate(cfg().start)+'</span>'; wrap.appendChild(g);
-  MEDS.forEach(m=>{
+  const list=[...MEDS.filter(m=>!m.regularMed), 'HEAD', ...MEDS.filter(m=>m.regularMed)];
+  list.forEach(m=>{
+    if(m==='HEAD'){const h=document.createElement('div');h.className='group';h.innerHTML='<h2>Regular medicines</h2><span class="t">Dr. Chawla, 10 Aug</span>';wrap.appendChild(h);return;}
     const ci=courseInfo(m,today);
     if(ci.stopped||m.ongoing){
       const card=document.createElement('div'); card.className='card';
       const st=ci.stopped?['Stopped','s-wait']:(ci.started?['Active','s-active']:['Not started','s-wait']);
       const sub=ci.stopped?'Stopped on '+fmtDate(m.stoppedOn)+' by doctor'
-        :(m.pat.some(Boolean)?SLOTS.filter((x,i)=>m.pat[i]).join(' and ')+' · ':'As needed · ')+'since '+fmtDate(m.startOn||cfg().start)+', until the doctor says';
+        :m.regularMed?ORDER.filter(i=>m.pat[i]).map(i=>SLOTS[i]).join(' and ')+' · ongoing'
+        :(m.pat.some(Boolean)?ORDER.filter(i=>m.pat[i]).map(i=>SLOTS[i]).join(' and ')+' · ':'As needed · ')+'since '+fmtDate(m.startOn||cfg().start)+', until the doctor says';
       card.innerHTML='<div class="crow"><span class="name">'+esc(m.name)+'</span><span class="status '+st[1]+'">'+st[0]+'</span></div><div class="meta">'+sub+'</div>';
       wrap.appendChild(card); return;
     }
@@ -445,7 +470,7 @@ function renderCourse(){
 /* ================= SETTINGS ================= */
 function renderSettings(){
   const c=cfg();
-  $('s_start').value=c.start; [0,1,2].forEach(i=>$('s_t'+i).value=c.times[i]);
+  $('s_start').value=c.start; [0,1,2,3].forEach(i=>$('s_t'+i).value=c.times[i]);
   $('s_dk').innerHTML=WEEKDAYS.map((d,i)=>'<option value="'+i+'"'+(i==c.dk?' selected':'')+'>'+d+'</option>').join('');
   $('s_by').value=c.by; $('s_endpoint').value=ls(K.ep,'');
   const rl=$('regList'); const r=regular();
@@ -463,7 +488,7 @@ function renderSettings(){
 
 $('saveSettings').addEventListener('click',()=>{
   const prev=cfg();
-  lsSet(K.cfg,{start:$('s_start').value||prev.start, times:[0,1,2].map(i=>$('s_t'+i).value||prev.times[i]),
+  lsSet(K.cfg,{start:$('s_start').value||prev.start, times:[0,1,2,3].map(i=>$('s_t'+i).value||prev.times[i]),
                dk:Number($('s_dk').value), by:$('s_by').value.trim()});
   renderAll(); toast('Saved');
 });
