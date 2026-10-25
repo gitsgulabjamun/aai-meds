@@ -197,11 +197,11 @@ const MEDS = [
   {id:'ceftum',   name:'Ceftum 500 mg',     dose:'1 tablet', purpose:'Antibiotic', pat:[1,0,1], days:7,
    note:'Finish all 7 days even if she feels better. Stopping early lets the infection come back.'},
   {id:'lanol',    name:'Lanol ER 650 mg',   dose:'1 tablet', purpose:'Pain and fever (paracetamol)', pat:[1,1,1], days:15, sos:'pain',
-   note:'This is paracetamol. Do not give Crocin, Dolo, Calpol or any other paracetamol on top of it. Enzoflam also contains paracetamol.'},
+   note:'This is paracetamol. Do not give Crocin, Dolo, Calpol or any other paracetamol on top of it.'},
   {id:'tapal',    name:'Tapal ER',          dose:'1 tablet', purpose:'Strong painkiller (tapentadol)', pat:[1,0,1], days:15, sos:'severe pain',
    note:'Strength is not written on the sheet, so check the strip. This is an opioid painkiller. It can cause drowsiness, dizziness and constipation, so stay with her when she gets up and walks. Swallow whole, do not crush.'},
-  {id:'enzoflam', name:'Enzoflam',          dose:'1 tablet', purpose:'Pain and swelling', pat:[1,0,1], days:15, sos:'pain',
-   note:'Combination painkiller that includes diclofenac and paracetamol. Give after food.'},
+  {id:'enzoflam', name:'Enzoflam',          dose:'1 tablet', purpose:'Pain and swelling', pat:[1,0,1], days:15, sos:'pain', stoppedOn:'2026-10-25',
+   note:'Stopped by Dr. Paresh because of hyperacidity. Do not restart it unless a doctor says so.'},
   {id:'pan',      name:'Pan 40 mg',         dose:'1 tablet', purpose:'Acidity and stomach protection', pat:[1,0,1], days:15, sos:'acidity',
    note:'Protects the stomach from the painkillers and the blood thinner. Usually given before food; confirm the timing with the doctor.'},
   {id:'emeset',   name:'Emeset 8 mg',       dose:'1 tablet', purpose:'Nausea and vomiting', pat:[1,1,1], days:15, sos:'vomiting'},
@@ -212,13 +212,21 @@ const MEDS = [
   {id:'bonk2',    name:'Bon K2',            dose:'1 tablet', purpose:'Bone health', pat:[0,1,0], days:90},
   {id:'bondk',    name:'Bon DK 60K IU shot',dose:'1 shot', purpose:'Vitamin D (weekly)', pat:[0,1,0], weekly:true, weeks:8,
    note:'Once a week for 8 weeks. The sheet does not give a time, so it is placed with lunch. Taking it with a meal helps absorption.'},
-  {id:'atoz',     name:'A to Z',            dose:'1 tablet', purpose:'Multivitamin', pat:[0,1,0], days:30, food:'After food'}
+  {id:'atoz',     name:'A to Z',            dose:'1 tablet', purpose:'Multivitamin', pat:[0,1,0], days:30, food:'After food'},
+  {id:'esos',     name:'ESOS',              dose:'1 tablet', purpose:'Hyperacidity (Dr. Paresh)', pat:[0,1,1], ongoing:true, startOn:'2026-10-25', food:'Before meal',
+   note:'Before lunch and before dinner. Added by Dr. Paresh for hyperacidity. Strength is not written, so check the strip. Continue until a doctor says to stop.'},
+  {id:'gelusil',  name:'Gelusil',           dose:'As per pack', purpose:'Antacid for acidity (Dr. Paresh)', pat:[0,0,0], ongoing:true, startOn:'2026-10-25', sos:'acidity',
+   note:'Antacid for acidity relief. Antacids can reduce how well other tablets absorb, so where possible keep it about 2 hours away from her other medicines. Confirm the dose with the doctor or pharmacist.'}
 ];
 
+const DOC_UPDATE = {date:'2026-10-25', by:'Dr. Paresh', text:'Hyperacidity plan: ESOS before lunch and dinner, Enzoflam stopped, Gelusil for acidity. If the acidity does not settle, visit a GP.'};
+
 const FLAGS = [
-  ['Paracetamol from two medicines','Lanol ER and Enzoflam both contain paracetamol. Together they are within the usual daily limit as prescribed, but there is no room for an extra Crocin or Dolo. Check with the doctor before giving anything else for pain or fever.'],
+  ['Acidity not settling','Dr. Paresh said: if the acidity still does not stop on ESOS and Gelusil, visit a GP. Go sooner, or to emergency, for vomiting blood, black or tarry stools, severe stomach pain, or chest pain.'],
+  ['Two acidity tablets','Pan 40 and ESOS both reduce stomach acid, and ESOS is usually esomeprazole, the same type of medicine as Pan. Dr. Paresh did not say whether Pan 40 continues. Ask him or the pharmacist before giving both, and check the ESOS strip.'],
+  ['No extra paracetamol','Lanol ER is paracetamol. Do not add Crocin, Dolo or any other paracetamol. Enzoflam, which also contained paracetamol, has been stopped.'],
   ['Drowsiness and falls','Tapal ER is an opioid painkiller. In the first days she may feel sleepy or dizzy. Help her to the bathroom and keep the path clear, especially at night.'],
-  ['Bleeding and stomach','Deplatt A is a blood thinner and Enzoflam contains diclofenac. Both raise the chance of stomach bleeding, which is why Pan 40 is prescribed. Black or tarry stools, vomiting blood, or new bruising need a call to the doctor the same day.'],
+  ['Bleeding and stomach','Deplatt A is a blood thinner, which raises the chance of stomach bleeding. Black or tarry stools, vomiting blood, or new bruising need a call to the doctor the same day.'],
   ['Constipation','Tapal ER commonly causes constipation. Cremaffin is daily for 3 days, then available under As needed. Water and fibre help.'],
   ['Time of day','The sheet says only morning, afternoon and night. Apart from A to Z (after food), it does not say before or after food. Ask the doctor or pharmacist at the follow up.']
 ];
@@ -264,6 +272,13 @@ function stateMap(){
 /* ================= SCHEDULE LOGIC ================= */
 function courseInfo(med, dateStr){
   const c=cfg(); const idx=daysBetween(c.start,dateStr);
+  if(med.stoppedOn && dateStr>=med.stoppedOn)
+    return {active:false, stopped:true, idx, ended:true, endDate: ymd(addDays(parseYmd(med.stoppedOn),-1))};
+  if(med.ongoing){
+    const s0=med.startOn||c.start; const started=dateStr>=s0;
+    return {active: started && med.pat.some(Boolean), started, ongoing:true, idx: daysBetween(s0,dateStr),
+            label:'Since '+fmtDate(s0), ended:false, endDate:null};
+  }
   if(med.weekly){
     const total=med.weeks*7;
     const active = idx>=0 && idx<total && parseYmd(dateStr).getDay()===Number(c.dk);
@@ -331,7 +346,9 @@ function renderToday(){
   if(!total) wrap.innerHTML='<div class="card empty">No scheduled medicines for this day.</div>';
   $('bar').style.width = total? (done/total*100)+'%':'0';
   $('progTxt').textContent = total? done+' of '+total+' doses given':'';
-  $('todayBanner').innerHTML = overdue? '<div class="banner alert">'+overdue+' dose'+(overdue>1?'s are':' is')+' past the scheduled time.</div>':'';
+  const docB = viewDate>=DOC_UPDATE.date && daysBetween(DOC_UPDATE.date,today)<=14
+    ? '<div class="banner warn"><b>'+DOC_UPDATE.by+', '+fmtDate(DOC_UPDATE.date)+':</b> '+DOC_UPDATE.text+'</div>' : '';
+  $('todayBanner').innerHTML = docB + (overdue? '<div class="banner alert">'+overdue+' dose'+(overdue>1?'s are':' is')+' past the scheduled time.</div>':'');
   $('headDay').textContent = idx>=0?'Day '+(daysBetween(c.start,today)+1)+' after discharge':'set discharge date';
 
   wrap.querySelectorAll('.med').forEach(el=>el.addEventListener('click',()=>toggleDose(el.dataset.k)));
@@ -356,7 +373,7 @@ function toggleDose(key){
 function renderSos(){
   const today=ymd(new Date()); const wrap=$('sosList'); wrap.innerHTML='';
   const all=events();
-  const sosMeds=MEDS.filter(m=>m.sos);
+  const sosMeds=MEDS.filter(m=>m.sos && !courseInfo(m,today).stopped && !(m.ongoing && !courseInfo(m,today).started));
   sosMeds.forEach(m=>{
     const ci=courseInfo(m,today);
     const mine=all.filter(e=>e.slot==='SOS'&&e.medId===m.id&&e.action==='given')
@@ -370,11 +387,12 @@ function renderSos(){
       '<div class="crow"><div style="flex:1;min-width:0">'+
         '<div class="name">'+esc(m.name)+'</div>'+
         '<div class="meta">If '+m.sos+' · '+esc(m.dose)+'</div>'+
-        (ci.ended?'':'<div class="tag">Still on daily schedule until '+fmtDate(ci.endDate)+'</div>')+
+        (ci.ended||ci.ongoing?'':'<div class="tag">Still on daily schedule until '+fmtDate(ci.endDate)+'</div>')+
+        (m.note&&m.ongoing?'<div class="meta" style="margin-top:4px">'+esc(m.note)+'</div>':'')+
         '<div class="meta" style="margin-top:4px">'+(last?'Last given '+ago+(last.by?' by '+esc(last.by):'')+' · '+todays.length+' today':'Not given yet as needed')+'</div>'+
         (last&&last.date===today?'<button class="undo" data-u="'+last.id+'">Undo last</button>':'')+
       '</div>'+
-      (ci.ended?'<button class="sosbtn" data-g="'+m.id+'">Give dose</button>':'')+'</div>';
+      (ci.ended||ci.ongoing?'<button class="sosbtn" data-g="'+m.id+'">Give dose</button>':'')+'</div>';
     wrap.appendChild(card);
   });
   wrap.querySelectorAll('[data-g]').forEach(b=>b.addEventListener('click',()=>{
@@ -397,6 +415,14 @@ function renderCourse(){
   const g=document.createElement('div'); g.className='group'; g.innerHTML='<h2>Course progress</h2><span class="t">from '+fmtDate(cfg().start)+'</span>'; wrap.appendChild(g);
   MEDS.forEach(m=>{
     const ci=courseInfo(m,today);
+    if(ci.stopped||m.ongoing){
+      const card=document.createElement('div'); card.className='card';
+      const st=ci.stopped?['Stopped','s-wait']:(ci.started?['Active','s-active']:['Not started','s-wait']);
+      const sub=ci.stopped?'Stopped on '+fmtDate(m.stoppedOn)+' by doctor'
+        :(m.pat.some(Boolean)?SLOTS.filter((x,i)=>m.pat[i]).join(' and ')+' · ':'As needed · ')+'since '+fmtDate(m.startOn||cfg().start)+', until the doctor says';
+      card.innerHTML='<div class="crow"><span class="name">'+esc(m.name)+'</span><span class="status '+st[1]+'">'+st[0]+'</span></div><div class="meta">'+sub+'</div>';
+      wrap.appendChild(card); return;
+    }
     const total=m.weekly?m.weeks*7:m.days;
     const pct=Math.max(0,Math.min(100,((ci.idx+1)/total)*100));
     let status, cls;

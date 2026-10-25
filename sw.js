@@ -1,5 +1,5 @@
 // App shell cache first. Apps Script calls always go to the network.
-const CACHE = 'aai-meds-v1';
+const CACHE = 'aai-meds-v2';
 const SHELL = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 
@@ -17,6 +17,14 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.hostname.includes('script.google.com') || url.hostname.includes('googleusercontent.com')) return;
   if (e.request.method !== 'GET') return;
+  // Pages: network first so medicine changes reach installed apps; cache only when offline.
+  if (e.request.mode === 'navigate') {
+    e.respondWith(fetch(e.request).then((res) => {
+      const copy = res.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
+      return res;
+    }).catch(() => caches.match(e.request).then((r) => r || caches.match('./index.html'))));
+    return;
+  }
   e.respondWith(caches.match(e.request).then((cached) => cached || fetch(e.request).then((res) => {
     const copy = res.clone();
     caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
