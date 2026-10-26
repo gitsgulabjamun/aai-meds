@@ -1,5 +1,5 @@
 // App shell cache first. Apps Script calls always go to the network.
-const CACHE = 'aai-meds-v4';
+const CACHE = 'aai-meds-v5';
 const SHELL = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 

@@ -214,34 +214,33 @@ const MEDS = [
   {id:'bondk',    name:'Bon DK 60K IU shot',dose:'1 shot', purpose:'Vitamin D (weekly)', pat:[0,1,0], weekly:true, weeks:8,
    note:'Once a week for 8 weeks. The sheet does not give a time, so it is placed with lunch. Taking it with a meal helps absorption.'},
   {id:'atoz',     name:'A to Z',            dose:'1 tablet', purpose:'Multivitamin', pat:[0,1,0], days:30, food:'After food'},
-  {id:'esos',     name:'Esoz (esomeprazole)', dose:'1 capsule', purpose:'Hyperacidity, replaces Enzoflam (Dr. Paresh)', pat:[0,1,1], ongoing:true, startOn:'2026-10-25', food:'Before meal',
-   note:'Before lunch and before dinner. Dr. Paresh prescribed Esoz in place of Enzoflam for hyperacidity. Swallow whole. Continue until a doctor says to stop.'},
+  {id:'esos',     name:'Esoz (esomeprazole)', dose:'1 capsule', purpose:'Hyperacidity, replaces Enzoflam (Dr. Paresh)', pat:[1,0,1], ongoing:true, startOn:'2026-10-25', food:'Before meal',
+   note:'Morning and night, at the times Enzoflam used to be given. Dr. Paresh prescribed Esoz in place of Enzoflam for hyperacidity. Swallow whole. Continue until a doctor says to stop.'},
 
   /* Regular medicines, Dr. Manoj Chawla, Lina Diabetes Care, 10 Aug 2026. pat = [morning, afternoon, night, early morning] */
-  {id:'thyrox',   name:'Thyrox 25 mcg',       dose:'1 tablet', doseByDay:{2:'2 tablets',4:'2 tablets',6:'2 tablets'}, purpose:'Thyroid (thyroxine)', pat:[0,0,0,1], ongoing:true, regularMed:true, food:'Empty stomach',
+  {id:'thyrox',   name:'Thyrox 25 mcg',       dose:'1 tablet', doseByDay:{2:'2 tablets',4:'2 tablets',6:'2 tablets'}, purpose:'Thyroid (thyroxine)', pat:[0,0,0,1], stoppedOn:'2026-10-26', stopNote:'Not on the final list confirmed on 26 Oct', ongoing:true, regularMed:true, food:'Empty stomach',
    note:'1 tablet daily, 2 tablets on Tuesday, Thursday and Saturday. Give with plain water on waking, before tea and breakfast. Keep it about 4 hours away from Gelusil and from Eido Fe Forte (iron), which reduce how much of it is absorbed.'},
   {id:'nikoran',  name:'Nikoran 5',           dose:'1 tablet', purpose:'Heart (nicorandil)', pat:[1,0,1], ongoing:true, regularMed:true, food:'After meal',
    note:'After breakfast and after dinner.'},
   {id:'seloken',  name:'Seloken XL 25 mg',    dose:'1 tablet', purpose:'BP and heart rate (metoprolol)', pat:[1,0,0], ongoing:true, regularMed:true, food:'After breakfast',
    note:'Do not crush. Do not stop suddenly.'},
-  {id:'udapa',    name:'Udapa M 5/500',       dose:'1 tablet', purpose:'Diabetes (dapagliflozin + metformin)', pat:[1,0,0], ongoing:true, regularMed:true, food:'After breakfast'},
-  {id:'eidofe',   name:'Eido Fe Forte',       dose:'1 tablet', purpose:'Vitamins and iron', pat:[1,0,0], ongoing:true, regularMed:true, food:'After breakfast'},
+  {id:'udapa',    name:'Udapa M 5/500',       dose:'1 tablet', purpose:'Diabetes (dapagliflozin + metformin)', pat:[1,0,0], stoppedOn:'2026-10-26', stopNote:'Not on the final list confirmed on 26 Oct', ongoing:true, regularMed:true, food:'After breakfast'},
+  {id:'eidofe',   name:'Eido Fe Forte',       dose:'1 tablet', purpose:'Vitamins and iron', pat:[1,0,0], stoppedOn:'2026-10-26', stopNote:'Not on the final list confirmed on 26 Oct', ongoing:true, regularMed:true, food:'After breakfast'},
   {id:'coversyl', name:'Coversyl 5 mg',       dose:'1 tablet', purpose:'BP (perindopril)', pat:[0,0,1], ongoing:true, regularMed:true, food:'After dinner'},
   {id:'rosuvas',  name:'Rosuvas 5 mg',        dose:'1 tablet', purpose:'Cholesterol (rosuvastatin)', pat:[0,0,1], ongoing:true, regularMed:true, food:'After dinner'},
   {id:'ignalis',  name:'Ignalis M SR 100/500',dose:'1 tablet', purpose:'Diabetes (sitagliptin + metformin)', pat:[0,0,1], ongoing:true, regularMed:true, food:'After dinner'},
-  {id:'gelusil',  name:'Gelusil',           dose:'As per pack', purpose:'Antacid for acidity (Dr. Paresh)', pat:[0,0,0], ongoing:true, startOn:'2026-10-25', sos:'acidity',
+  {id:'gelusil',  name:'Gelusil',           dose:'As per pack', purpose:'Antacid for acidity (Dr. Paresh)', pat:[0,0,0], stoppedOn:'2026-10-26', stopNote:'Not on the final list confirmed on 26 Oct', ongoing:true, startOn:'2026-10-25', sos:'acidity',
    note:'Antacid for acidity relief. Antacids can reduce how well other tablets absorb, so where possible keep it about 2 hours away from her other medicines. Confirm the dose with the doctor or pharmacist.'}
 ];
 
-const DOC_UPDATE = {date:'2026-10-25', by:'Dr. Paresh', text:'Hyperacidity plan: Esoz replaces Enzoflam, taken before lunch and dinner, Gelusil for acidity. If the acidity does not settle, visit a GP.'};
+const DOC_UPDATE = {date:'2026-10-25', by:'Dr. Paresh', text:'Hyperacidity plan: Esoz replaces Enzoflam, given morning and night. If the acidity does not settle, visit a GP.'};
 
 const FLAGS = [
-  ['Acidity not settling','Dr. Paresh said: if the acidity still does not stop on Esoz and Gelusil, visit a GP. Go sooner, or to emergency, for vomiting blood, black or tarry stools, severe stomach pain, or chest pain.'],
+  ['Acidity not settling','Dr. Paresh said: if the acidity still does not stop on Esoz, visit a GP. Go sooner, or to emergency, for vomiting blood, black or tarry stools, severe stomach pain, or chest pain.'],
   ['Two acidity tablets','Pan 40 (pantoprazole) and Esoz (esomeprazole) are the same type of acid reducer. Dr. Paresh did not say whether Pan 40 continues. Ask him before giving both.'],
   ['Two anti nausea medicines','The strip at home also lists domperidone (as in Esoz D). If that is the one she takes, note that Emeset (ondansetron) also treats nausea. Both treat nausea and both can affect heart rhythm, which matters more at her age and with her heart medicines. Ask the doctor whether she needs both.'],
   ['Deplatt A on both prescriptions','Her regular prescription and the discharge sheet both list Deplatt A 75. Give one tablet a day, never two. The app shows it once.'],
-  ['Low sugar while eating less','Her diabetes doctor noted possible low sugar with delayed meals. After surgery she may eat less, so watch for sweating, shaking, confusion or unusual drowsiness and check her sugar. Keep meals on time after Udapa M and Ignalis M. Also ask the doctor whether Udapa M should continue while her eating is reduced.'],
-  ['Spacing Thyrox','Thyrox works best on an empty stomach. Keep Gelusil and Eido Fe Forte about 4 hours away from it.'],
+  ['Low sugar while eating less','Her diabetes doctor noted possible low sugar with delayed meals. After surgery she may eat less, so watch for sweating, shaking, confusion or unusual drowsiness and check her sugar. Keep meals on time after Ignalis M.'],
   ['No extra paracetamol','Lanol ER is paracetamol. Do not add Crocin, Dolo or any other paracetamol. Enzoflam, which also contained paracetamol, has been stopped.'],
   ['Drowsiness and falls','Tapal ER is an opioid painkiller. In the first days she may feel sleepy or dizzy. Help her to the bathroom and keep the path clear, especially at night.'],
   ['Bleeding and stomach','Deplatt A is a blood thinner, which raises the chance of stomach bleeding. Black or tarry stools, vomiting blood, or new bruising need a call to the doctor the same day.'],
@@ -442,7 +441,7 @@ function renderCourse(){
     if(ci.stopped||m.ongoing){
       const card=document.createElement('div'); card.className='card';
       const st=ci.stopped?['Stopped','s-wait']:(ci.started?['Active','s-active']:['Not started','s-wait']);
-      const sub=ci.stopped?'Stopped on '+fmtDate(m.stoppedOn)+' by doctor'
+      const sub=ci.stopped?(m.stopNote||'Stopped on '+fmtDate(m.stoppedOn)+' by doctor')
         :m.regularMed?ORDER.filter(i=>m.pat[i]).map(i=>SLOTS[i]).join(' and ')+' · ongoing'
         :(m.pat.some(Boolean)?ORDER.filter(i=>m.pat[i]).map(i=>SLOTS[i]).join(' and ')+' · ':'As needed · ')+'since '+fmtDate(m.startOn||cfg().start)+', until the doctor says';
       card.innerHTML='<div class="crow"><span class="name">'+esc(m.name)+'</span><span class="status '+st[1]+'">'+st[0]+'</span></div><div class="meta">'+sub+'</div>';
