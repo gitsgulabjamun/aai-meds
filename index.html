@@ -214,8 +214,8 @@ const MEDS = [
   {id:'bondk',    name:'Bon DK 60K IU shot',dose:'1 shot', purpose:'Vitamin D (weekly)', pat:[0,1,0], weekly:true, weeks:8,
    note:'Once a week for 8 weeks. The sheet does not give a time, so it is placed with lunch. Taking it with a meal helps absorption.'},
   {id:'atoz',     name:'A to Z',            dose:'1 tablet', purpose:'Multivitamin', pat:[0,1,0], days:30, food:'After food'},
-  {id:'esos',     name:'ESOS (esomeprazole 40 + domperidone)', dose:'1 capsule', purpose:'Hyperacidity (Dr. Paresh)', pat:[0,1,1], ongoing:true, startOn:'2026-10-25', food:'Before meal',
-   note:'Before lunch and before dinner. Added by Dr. Paresh for hyperacidity. Swallow whole. Continue until a doctor says to stop.'},
+  {id:'esos',     name:'Esoz (esomeprazole)', dose:'1 capsule', purpose:'Hyperacidity, replaces Enzoflam (Dr. Paresh)', pat:[0,1,1], ongoing:true, startOn:'2026-10-25', food:'Before meal',
+   note:'Before lunch and before dinner. Dr. Paresh prescribed Esoz in place of Enzoflam for hyperacidity. Swallow whole. Continue until a doctor says to stop.'},
 
   /* Regular medicines, Dr. Manoj Chawla, Lina Diabetes Care, 10 Aug 2026. pat = [morning, afternoon, night, early morning] */
   {id:'thyrox',   name:'Thyrox 25 mcg',       dose:'1 tablet', doseByDay:{2:'2 tablets',4:'2 tablets',6:'2 tablets'}, purpose:'Thyroid (thyroxine)', pat:[0,0,0,1], ongoing:true, regularMed:true, food:'Empty stomach',
@@ -233,12 +233,12 @@ const MEDS = [
    note:'Antacid for acidity relief. Antacids can reduce how well other tablets absorb, so where possible keep it about 2 hours away from her other medicines. Confirm the dose with the doctor or pharmacist.'}
 ];
 
-const DOC_UPDATE = {date:'2026-10-25', by:'Dr. Paresh', text:'Hyperacidity plan: ESOS before lunch and dinner, Enzoflam stopped, Gelusil for acidity. If the acidity does not settle, visit a GP.'};
+const DOC_UPDATE = {date:'2026-10-25', by:'Dr. Paresh', text:'Hyperacidity plan: Esoz replaces Enzoflam, taken before lunch and dinner, Gelusil for acidity. If the acidity does not settle, visit a GP.'};
 
 const FLAGS = [
-  ['Acidity not settling','Dr. Paresh said: if the acidity still does not stop on ESOS and Gelusil, visit a GP. Go sooner, or to emergency, for vomiting blood, black or tarry stools, severe stomach pain, or chest pain.'],
-  ['Two acidity tablets','Pan 40 (pantoprazole) and ESOS (esomeprazole) are the same type of acid reducer. Dr. Paresh did not say whether Pan 40 continues. Ask him before giving both.'],
-  ['Two anti nausea medicines','ESOS contains domperidone and Emeset is ondansetron. Both treat nausea and both can affect heart rhythm, which matters more at her age and with her heart medicines. Ask the doctor whether she needs both.'],
+  ['Acidity not settling','Dr. Paresh said: if the acidity still does not stop on Esoz and Gelusil, visit a GP. Go sooner, or to emergency, for vomiting blood, black or tarry stools, severe stomach pain, or chest pain.'],
+  ['Two acidity tablets','Pan 40 (pantoprazole) and Esoz (esomeprazole) are the same type of acid reducer. Dr. Paresh did not say whether Pan 40 continues. Ask him before giving both.'],
+  ['Two anti nausea medicines','The strip at home also lists domperidone (as in Esoz D). If that is the one she takes, note that Emeset (ondansetron) also treats nausea. Both treat nausea and both can affect heart rhythm, which matters more at her age and with her heart medicines. Ask the doctor whether she needs both.'],
   ['Deplatt A on both prescriptions','Her regular prescription and the discharge sheet both list Deplatt A 75. Give one tablet a day, never two. The app shows it once.'],
   ['Low sugar while eating less','Her diabetes doctor noted possible low sugar with delayed meals. After surgery she may eat less, so watch for sweating, shaking, confusion or unusual drowsiness and check her sugar. Keep meals on time after Udapa M and Ignalis M. Also ask the doctor whether Udapa M should continue while her eating is reduced.'],
   ['Spacing Thyrox','Thyrox works best on an empty stomach. Keep Gelusil and Eido Fe Forte about 4 hours away from it.'],
